@@ -32,6 +32,7 @@
     "@iconify/react": "^5.0.2",
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.7",
+    "@workos-inc/authkit-react": "^0.9.0",
     "apexcharts": "^3.52.0",
     "dayjs": "^1.11.13",
     "history": "^5.3.0",
