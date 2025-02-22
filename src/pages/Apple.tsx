@@ -94,18 +94,15 @@ export default function Page() {
     series: [],
   });
 
-  const VITE_x_rapidapi_host = import.meta.env.VITE_x_rapidapi_host;
-  const VITE_x_rapidapi_key = import.meta.env.VITE_x_rapidapi_key;
-  const VITE_alpha_link = import.meta.env.VITE_alpha_link;
-
   useEffect(() => {
     const fetchData = async () => {
-      const url = VITE_alpha_link;
+      const url =
+        'https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_MONTHLY&symbol=AAPL&datatype=json';
       const options = {
         method: 'GET',
         headers: {
-          'x-rapidapi-key': VITE_x_rapidapi_key, // Replace with your RapidAPI key
-          'x-rapidapi-host': VITE_x_rapidapi_host,
+          'x-rapidapi-key': 'd5fea69192mshcea247651a31b42p1aec01jsnceadcc0f1ef7', // Replace with your RapidAPI key
+          'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
         },
       };
 
