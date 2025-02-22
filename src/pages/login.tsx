@@ -1,5 +1,5 @@
-import { useAuth } from '@workos-inc/authkit-react';
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '@workos-inc/authkit-react';
 
 export default function Login() {
   const { signIn } = useAuth();

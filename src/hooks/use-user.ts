@@ -1,5 +1,5 @@
-import { useAuth } from '@workos-inc/authkit-react';
 import { useEffect } from 'react';
+import { useAuth } from '@workos-inc/authkit-react';
 import { useLocation } from 'react-router-dom';
 
 type UserOrNull = ReturnType<typeof useAuth>['user'];
@@ -11,10 +11,11 @@ export const useUser = (): UserOrNull => {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      // Use 'state' to return the user to the current page after signing in
-      signIn({ state: { returnTo: location.pathname } });
+      signIn({ state: { returnTo: location.pathname } }).catch((error) => {
+        console.error('Sign-in failed:', error);
+      });
     }
-  }, [isLoading, user]);
+  }, [isLoading, user, location.pathname, signIn]);
 
   return user;
 };

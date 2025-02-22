@@ -50,7 +50,7 @@ export function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'apple', element: <ApplePage /> },
-        { path: 'login', element: <LoginPage /> },
+        { path: 'signIn', element: <LoginPage /> },
       ],
     },
     {
