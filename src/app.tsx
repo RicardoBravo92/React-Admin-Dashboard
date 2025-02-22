@@ -10,10 +10,14 @@ import { ThemeProvider } from 'src/theme/theme-provider';
 
 import { Iconify } from 'src/components/iconify';
 
+import { useAuth, AuthKitProvider } from '@workos-inc/authkit-react';
+import { useNavigate } from 'react-router-dom';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
   useScrollToTop();
+  const navigate = useNavigate();
 
   const githubButton = (
     <Fab
@@ -36,9 +40,19 @@ export default function App() {
   );
 
   return (
-    <ThemeProvider>
-      <Router />
-      {githubButton}
-    </ThemeProvider>
+    <AuthKitProvider
+      clientId={import.meta.env.VITE_WORKOS_CLIENT_ID}
+      apiHostname={import.meta.env.VITE_WORKOS_API_HOSTNAME}
+      onRedirectCallback={({ state }) => {
+        if (state?.returnTo) {
+          navigate(state.returnTo);
+        }
+      }}
+    >
+      <ThemeProvider>
+        <Router />
+        {githubButton}
+      </ThemeProvider>
+    </AuthKitProvider>
   );
 }
