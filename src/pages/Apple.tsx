@@ -6,7 +6,7 @@ import { useTheme, alpha as hexAlpha } from '@mui/material/styles';
 import { Chart, useChart } from 'src/components/chart';
 import type { ChartOptions } from 'src/components/chart';
 
-// Define the structure of the API response
+// Define the type for the API data
 type MonthlyTimeSeries = {
   [date: string]: {
     '1. open': string;
@@ -18,7 +18,8 @@ type MonthlyTimeSeries = {
 };
 
 type AlphaVantageResponse = {
-  'Monthly Time Series': MonthlyTimeSeries;
+  'Monthly Time Series'?: MonthlyTimeSeries;
+  'Error Message'?: string;
 };
 
 type Props = {
@@ -53,12 +54,17 @@ function AnalyticsWebsiteVisits({ title, subheader, chart, ...other }: Props) {
     xaxis: {
       categories: chart.categories,
     },
+    yaxis: {
+      labels: {
+        formatter: (value: number) => value.toFixed(2), // Show two decimal places on the Y-axis
+      },
+    },
     legend: {
       show: true,
     },
     tooltip: {
       y: {
-        formatter: (value: number) => `${value} USD`,
+        formatter: (value: number) => `${value.toFixed(2)} USD`, // Show two decimal places in the tooltip
       },
     },
     ...chart.options,
@@ -69,7 +75,7 @@ function AnalyticsWebsiteVisits({ title, subheader, chart, ...other }: Props) {
       <CardHeader title={title} subheader={subheader} />
 
       <Chart
-        type="bar" // Set chart type to bar
+        type="bar" // Use bar chart
         series={chart.series}
         options={chartOptions}
         height={364}
@@ -88,31 +94,60 @@ export default function Page() {
     series: [],
   });
 
+  const VITE_x_rapidapi_host = import.meta.env.VITE_x_rapidapi_host;
+  const VITE_x_rapidapi_key = import.meta.env.VITE_x_rapidapi_key;
+  const VITE_alpha_link = import.meta.env.VITE_alpha_link;
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const apiKey = 'YOUR_API_KEY'; // Replace with your Alpha Vantage API key
-        const response = await fetch(
-          `https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=AAPL&apikey=${apiKey}`
-        );
-        const data = (await response.json()) as AlphaVantageResponse;
+      const url = VITE_alpha_link;
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': VITE_x_rapidapi_key, // Replace with your RapidAPI key
+          'x-rapidapi-host': VITE_x_rapidapi_host,
+        },
+      };
 
-        // Extract the last 12 months of data
-        const monthlyData = Object.entries(data['Monthly Time Series'])
+      try {
+        const response = await fetch(url, options);
+
+        // Check if the response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the JSON response and define the type
+        const result = (await response.json()) as AlphaVantageResponse;
+
+        // Check if the API returned an error
+        if (result['Error Message']) {
+          console.error('API Error:', result['Error Message']);
+          return;
+        }
+
+        // Check if the expected data is present
+        if (!result['Monthly Time Series']) {
+          console.error('No monthly time series data found');
+          return;
+        }
+
+        // Process the data
+        const timeSeries = result['Monthly Time Series'];
+        const last12Months = Object.entries(timeSeries)
           .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()) // Sort by date descending
           .slice(0, 12) // Take the last 12 months
-          .reverse(); // Reverse the order to go from oldest to newest
+          .reverse(); // Reverse to go from oldest to newest
 
-        // Transform the data
-        const categories = monthlyData.map(([date]) => {
+        const categories = last12Months.map(([date]) => {
           const [year, month] = date.split('-');
           return `${new Date(date).toLocaleString('default', { month: 'short' })} ${year}`;
         });
 
-        const openPrices = monthlyData.map(([, entry]) => parseFloat(entry['1. open']));
-        const highPrices = monthlyData.map(([, entry]) => parseFloat(entry['2. high']));
-        const lowPrices = monthlyData.map(([, entry]) => parseFloat(entry['3. low']));
-        const closePrices = monthlyData.map(([, entry]) => parseFloat(entry['4. close']));
+        const openPrices = last12Months.map(([, data]) => parseFloat(data['1. open']));
+        const highPrices = last12Months.map(([, data]) => parseFloat(data['2. high']));
+        const lowPrices = last12Months.map(([, data]) => parseFloat(data['3. low']));
+        const closePrices = last12Months.map(([, data]) => parseFloat(data['4. close']));
 
         setStockData({
           categories,
@@ -134,8 +169,8 @@ export default function Page() {
   return (
     <Grid xs={12} md={6} lg={8}>
       <AnalyticsWebsiteVisits
-        title="Apple stock for the past 12 months"
-        subheader="from March 2024 to February 2025"
+        title="Apple Stock (Last 12 Months)"
+        subheader="Open, Close, High, and Low Prices"
         chart={{
           categories: stockData.categories,
           series: stockData.series,
