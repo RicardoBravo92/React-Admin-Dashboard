@@ -1,7 +1,5 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
-
 import { useState, useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -11,10 +9,8 @@ import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
-
 import { useRouter, usePathname } from 'src/routes/hooks';
 import { useUser } from '../../hooks/use-user';
-
 import { _myAccount } from 'src/_mock';
 
 // ----------------------------------------------------------------------
@@ -31,7 +27,6 @@ export type AccountPopoverProps = IconButtonProps & {
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
   const user = useUser();
-
   const pathname = usePathname();
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
@@ -52,6 +47,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
+  const displayName = user ? `${user.user.firstName} ${user.lastName}` : _myAccount.displayName;
+  const email = user?.email || _myAccount.email;
+  const avatarInitial =
+    user?.user.firstName?.charAt(0).toUpperCase() || _myAccount.displayName.charAt(0).toUpperCase();
+
   return (
     <>
       <IconButton
@@ -61,13 +61,13 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
           width: 40,
           height: 40,
           background: (theme) =>
-            `conic-gradient(${theme.vars.palette.primary.light}, ${theme.vars.palette.warning.light}, ${theme.vars.palette.primary.light})`,
+            `conic-gradient(${theme.palette.primary.light}, ${theme.palette.warning.light}, ${theme.palette.primary.light})`,
           ...sx,
         }}
         {...other}
       >
-        <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {user.user.firstName || _myAccount.displayName.charAt(0).toUpperCase()}
+        <Avatar src={_myAccount.photoURL} alt={displayName} sx={{ width: 1, height: 1 }}>
+          {avatarInitial}
         </Avatar>
       </IconButton>
 
@@ -85,11 +85,10 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.user.firstName  user?.lastName||_myAccount?.displayName}
+            {displayName}
           </Typography>
-
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email||_myAccount?.email}
+            {email}
           </Typography>
         </Box>
 
