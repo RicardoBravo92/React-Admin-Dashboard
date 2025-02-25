@@ -18,6 +18,7 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const ApplePage = lazy(() => import('src/pages/Apple'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const LoginPage = lazy(() => import('src/pages/login'));
+export const AccountGeneralPage = lazy(() => import('src/pages/account'));
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ export function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'apple', element: <ApplePage /> },
         { path: 'login', element: <LoginPage /> },
+        { path: 'account', element: <AccountGeneralPage /> },
       ],
     },
     {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useAuth } from '@workos-inc/authkit-react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@workos-inc/authkit-react';
 
 type UserOrNull = ReturnType<typeof useAuth>['user'];
 

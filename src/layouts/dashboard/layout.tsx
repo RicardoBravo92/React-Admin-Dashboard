@@ -92,7 +92,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                     },
                     {
                       label: 'Profile',
-                      href: '#',
+                      href: '/account',
                       icon: <Iconify width={22} icon="solar:shield-keyhole-bold-duotone" />,
                     },
                     {

@@ -38,9 +38,14 @@ export const navData = [
     path: '/blog',
     icon: icon('ic-blog'),
   },
+  // {
+  //   title: 'Sign in',
+  //   path: '/sign-in',
+  //   icon: icon('ic-lock'),
+  // },
   {
     title: 'Sign in',
-    path: '/sign-in',
+    path: '/login',
     icon: icon('ic-lock'),
   },
   {
