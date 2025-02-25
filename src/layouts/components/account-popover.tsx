@@ -1,5 +1,5 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -12,6 +12,7 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 import { _myAccount } from 'src/_mock';
 import { useUser } from '../../hooks/use-user';
+import { useAuth } from '@workos-inc/authkit-react';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ export type AccountPopoverProps = IconButtonProps & {
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
   const user = useUser();
+  const { signOut } = useAuth();
   const pathname = usePathname();
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
@@ -47,10 +49,28 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
-  const displayName = user ? `${user.firstName} ${user.lastName}` : _myAccount.displayName;
-  const email = user?.email || _myAccount.email;
-  const avatarInitial =
-    user?.firstName?.charAt(0).toUpperCase() || _myAccount.displayName.charAt(0).toUpperCase();
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut();
+      handleClosePopover();
+      router.push('/'); // Redirect to home or login page after sign-out
+    } catch (error) {
+      console.error('Error during sign-out:', error);
+    }
+  }, [signOut, handleClosePopover, router]);
+
+  const displayName = useMemo(
+    () => (user ? `${user.firstName} ${user.lastName}` : _myAccount.displayName),
+    [user]
+  );
+
+  const email = useMemo(() => user?.email || _myAccount.email, [user]);
+
+  const avatarInitial = useMemo(
+    () =>
+      user?.firstName?.charAt(0).toUpperCase() || _myAccount.displayName.charAt(0).toUpperCase(),
+    [user]
+  );
 
   return (
     <>
@@ -64,6 +84,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
             `conic-gradient(${theme.palette.primary.light}, ${theme.palette.warning.light}, ${theme.palette.primary.light})`,
           ...sx,
         }}
+        aria-label="Account menu"
         {...other}
       >
         <Avatar src={_myAccount.photoURL} alt={displayName} sx={{ width: 1, height: 1 }}>
@@ -94,46 +115,50 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuList
-          disablePadding
-          sx={{
-            p: 1,
-            gap: 0.5,
-            display: 'flex',
-            flexDirection: 'column',
-            [`& .${menuItemClasses.root}`]: {
-              px: 1,
-              gap: 2,
-              borderRadius: 0.75,
-              color: 'text.secondary',
-              '&:hover': { color: 'text.primary' },
-              [`&.${menuItemClasses.selected}`]: {
-                color: 'text.primary',
-                bgcolor: 'action.selected',
-                fontWeight: 'fontWeightSemiBold',
+        {data.length > 0 && (
+          <MenuList
+            disablePadding
+            sx={{
+              p: 1,
+              gap: 0.5,
+              display: 'flex',
+              flexDirection: 'column',
+              [`& .${menuItemClasses.root}`]: {
+                px: 1,
+                gap: 2,
+                borderRadius: 0.75,
+                color: 'text.secondary',
+                '&:hover': { color: 'text.primary' },
+                [`&.${menuItemClasses.selected}`]: {
+                  color: 'text.primary',
+                  bgcolor: 'action.selected',
+                  fontWeight: 'fontWeightSemiBold',
+                },
               },
-            },
-          }}
-        >
-          {data.map((option) => (
-            <MenuItem
-              key={option.label}
-              selected={option.href === pathname}
-              onClick={() => handleClickItem(option.href)}
-            >
-              {option.icon}
-              {option.label}
-            </MenuItem>
-          ))}
-        </MenuList>
+            }}
+          >
+            {data.map((option) => (
+              <MenuItem
+                key={option.label}
+                selected={option.href === pathname}
+                onClick={() => handleClickItem(option.href)}
+              >
+                {option.icon}
+                {option.label}
+              </MenuItem>
+            ))}
+          </MenuList>
+        )}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
-            Logout
-          </Button>
-        </Box>
+        {user && (
+          <Box sx={{ p: 1 }}>
+            <Button fullWidth color="error" size="medium" variant="text" onClick={handleSignOut}>
+              Logout
+            </Button>
+          </Box>
+        )}
       </Popover>
     </>
   );
