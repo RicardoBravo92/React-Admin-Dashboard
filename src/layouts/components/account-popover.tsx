@@ -11,8 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 import { _myAccount } from 'src/_mock';
-import { useUser } from '../../hooks/use-user';
 import { useAuth } from '@workos-inc/authkit-react';
+import { useUser } from '../../hooks/use-user';
 
 // ----------------------------------------------------------------------
 
