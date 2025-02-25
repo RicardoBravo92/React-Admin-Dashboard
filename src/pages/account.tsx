@@ -1,6 +1,6 @@
-import { useUser } from '../hooks/use-user';
-import { Box, Flex, Heading, Text, TextField } from '@radix-ui/themes';
 import { useAuth } from '@workos-inc/authkit-react';
+import { Box, Grid, Typography, TextField } from '@mui/material';
+import { useUser } from '@/hooks/use-user';
 
 export default function Account() {
   const user = useUser();
@@ -21,31 +21,40 @@ export default function Account() {
 
   return (
     <>
-      <Flex direction="column" gap="2" mb="7">
-        <Heading size="8" align="center">
-          Account details
-        </Heading>
-        <Text size="5" align="center" color="gray">
-          Below are your account details
-        </Text>
-      </Flex>
+      <Grid container direction="column" spacing={2} mb={7}>
+        <Grid item>
+          <Typography variant="h4" align="center">
+            Account details
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography variant="subtitle1" align="center" color="textSecondary">
+            Below are your account details
+          </Typography>
+        </Grid>
+      </Grid>
 
       {userFields && (
-        <Flex direction="column" justify="center" gap="3" width="400px">
+        <Grid container direction="column" spacing={3} maxWidth={400} mx="auto">
           {userFields.map(([label, value]) => (
-            <Flex asChild align="center" gap="6" key={value}>
-              <label>
-                <Text weight="bold" size="3" style={{ width: 100 }}>
+            <Grid item key={value}>
+              <Box display="flex" alignItems="center" gap={3}>
+                <Typography fontWeight="bold" style={{ width: 100 }}>
                   {label}
-                </Text>
-
-                <Box flexGrow="1">
-                  <TextField.Root value={value || ''} readOnly />
+                </Typography>
+                <Box flexGrow={1}>
+                  <TextField
+                    value={value || ''}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
                 </Box>
-              </label>
-            </Flex>
+              </Box>
+            </Grid>
           ))}
-        </Flex>
+        </Grid>
       )}
     </>
   );
