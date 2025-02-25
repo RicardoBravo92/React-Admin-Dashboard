@@ -47,10 +47,10 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
-  const displayName = user ? `${user.user.firstName} ${user.lastName}` : _myAccount.displayName;
+  const displayName = user ? `${user.firstName} ${user.lastName}` : _myAccount.displayName;
   const email = user?.email || _myAccount.email;
   const avatarInitial =
-    user?.user.firstName?.charAt(0).toUpperCase() || _myAccount.displayName.charAt(0).toUpperCase();
+    user?.firstName?.charAt(0).toUpperCase() || _myAccount.displayName.charAt(0).toUpperCase();
 
   return (
     <>
