@@ -1,6 +1,6 @@
 import { useAuth } from '@workos-inc/authkit-react';
 import { Box, Grid, Typography, TextField } from '@mui/material';
-import { useUser } from '@/hooks/use-user';
+import { useUser } from '../hooks/use-user';
 
 export default function Account() {
   const user = useUser();
